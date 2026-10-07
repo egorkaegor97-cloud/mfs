@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Пожиратель</title>
+<style>
+  :root {
+    --bg:     #050505;
+    --fg:     #d8d8d8;
+    --dim:    #6b6b6b;
+    --accent: #b3ffb3;
+    --danger: #ff6b6b;
+  }
+
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    overflow: hidden;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: "IBM Plex Mono", "Courier New", monospace;
+  }
+
+  canvas { display: block; touch-action: none; }
+
+  /* сканлайны поверх всего */
+  #scanlines {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.025) 0px,
+      rgba(255,255,255,0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  /* мягкое свечение по краям (виньетка) */
+  #vignette {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 40%,
+      rgba(0,0,0,0.55) 100%
+    );
+  }
+
+  #ui {
+    position: fixed; inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10;
+    text-align: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  #ui.show { display: flex; }
+
+  #ui h1 {
+    color: var(--accent);
+    font-size: 2.2rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    margin: 0 0 16px;
+    text-shadow:
+      0 0 8px rgba(179,255,179,0.5),
+      0 0 24px rgba(179,255,179,0.25);
+    animation: titlePulse 4s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { opacity: 1; }
+    48%      { opacity: 1; }
+    50%      { opacity: 0.75; }
+    52%      { opacity: 1; }
+  }
+
+  #ui .sub {
+    color: var(--dim);
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    margin: 0 0 40px;
+  }
+
+  #ui .score {
+    color: var(--accent);
+    font-size: 1.4rem;
+    letter-spacing: 0.3em;
+    margin: 0 0 40px;
+    text-shadow: 0 0 12px rgba(179,255,179,0.4);
+  }
+
+  #ui .hint {
+    color: var(--dim);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    margin-top: 32px;
+    opacity: 0.6;
+    font-style: italic;
+  }
+
+  #ui button {
+    font-family: inherit;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    padding: 16px 40px;
+    margin: 6px 0;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    min-width: 240px;
+    text-transform: uppercase;
+  }
+  #ui button:hover,
+  #ui button:active {
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 24px rgba(179,255,179,0.5);
+  }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="scanlines"></div>
+<div id="vignette"></div>
+
+<div id="ui">
+  <div id="ui-content"></div>
+</div>
+
+<script src="src/sdk.js"></script>
+<script src="src/game.js"></script>
+</body>
+</html>
